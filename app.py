@@ -2,6 +2,7 @@ import streamlit as st
 import requests
 from datetime import datetime
 from collections import Counter
+import matplotlib.pyplot as plt
 
 st.set_page_config(page_title="Weather Dashboard")
 
@@ -167,6 +168,12 @@ if get_weather_btn:
                         value=f"{sunset_PM}"
                     )
 
+                dates = []
+                min_temps = []
+                min_temps_f = []
+                max_temps = []
+                max_temps_f = []
+
                 for date, records in forecast_days.items():
 
                     if date == today_date:
@@ -197,32 +204,66 @@ if get_weather_btn:
                     min_temp = min(temps)
                     max_temp = max(temps)
 
+                    dates.append(date)
+                    min_temps.append(min_temp)
+                    max_temps.append(max_temp)
+
                     st.subheader(date)
 
                     col1, col2, col3, col4, col5 = st.columns(5)
 
                     with col1:
-                        st.metric(
-                            label="Min Temperature",
-                            value=f"{min_temp}"
-                        )
+                        if unit == "Celsius (°C)":
+                            st.metric(
+                                label="🌡️Min Temperature",
+                                value=f"{min_temp:.1f}°C"
+                            )
+
+                        elif unit == "Fahrenheit (°F)":
+                            min_temp_f = (min_temp * 9 / 5) + 32
+                            st.metric(
+                            label="🌡️Min Temperature",
+                            value=f"{min_temp_f:.1f}°F"
+                           )
+                            min_temps_f.append(min_temp_f)
 
                     with col2:
-                        st.metric(
-                            label="Max Temperature",
-                            value=f"{max_temp}"
-                        )
+                        if unit == "Celsius (°C)":
+                            st.metric(
+                                label="🌡️Max Temperature",
+                                value=f"{max_temp:.1f}°C"
+                            )
+
+                        elif unit == "Fahrenheit (°F)":
+                            max_temp_f = (max_temp * 9 / 5) + 32
+                        
+                            st.metric(
+                            label="🌡️Max Temperature",
+                            value=f"{max_temp_f:.1f}°F"
+                           )
+                            max_temps_f.append(max_temp_f)
+                                                    
 
                     with col3:
-                        st.metric(
-                            label="Feels Like",
-                            value=f"{avg_feels_like}"
-                        )
+                        if unit == "Celsius (°C)":
+                            st.metric(
+                                label="🤗Feels Like",
+                                value=f"{avg_feels_like:.1f}°C"
+                            )
 
+                        elif unit == "Fahrenheit (°F)":
+                            avg_feels_like_f = (avg_feels_like * 9 / 5) + 32
+                        
+                            st.metric(
+                            label="🤗Feels Like",
+                            value=f"{avg_feels_like_f:.1f}°F"
+                           )
+                                                    
+                      
                     with col4:
                         st.metric(
-                            label="Humidity",
-                            value=f"{avg_humidity}"
+                            label="💧Humidity",
+                            value=f"{avg_humidity:.1f} %"
                         )
 
                     with col5:
@@ -231,11 +272,35 @@ if get_weather_btn:
                             value=f"{c_weather}"
                         )
 
+                
+
                     forecast_count += 1
 
                     if forecast_count == 4:
                         break
 
+
+
+            #graphs
+                fig = plt.figure()
+                ax = fig.add_axes([0.1,0.1,0.8,0.8])
+                if unit == "Celsius (°C)":
+                    ax.plot(dates, min_temps, label="Minimum Temperature")
+                    ax.plot(dates, max_temps, label="Maximum Temperature")
+                    ax.set_xlabel("Date")
+                    ax.set_ylabel("Temperature (°C)")
+                    ax.legend()
+                    st.pyplot(fig)
+
+                elif unit == "Fahrenheit (°F)":
+                    ax.plot(dates, min_temps_f, label="Minimum Temperature")
+                    ax.plot(dates, max_temps_f, label="Maximum Temperature")
+                    ax.set_xlabel("Date")
+                    ax.set_ylabel("Temperature (°F)")
+                    ax.legend()
+                    st.pyplot(fig)               
+                
+                
             elif response.status_code == 401:
                 st.error("Invalid API Key")
 
