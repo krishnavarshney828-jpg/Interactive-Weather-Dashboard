@@ -1,12 +1,15 @@
 import streamlit as st
 import requests
+import matplotlib.pyplot as plt
 from datetime import datetime
 from collections import Counter
-import matplotlib.pyplot as plt
 
 st.set_page_config(page_title="Weather Dashboard")
-
-st.title("🌤️ Weather Dashboard")
+col1, col2 = st.columns([1,4])
+with col1:
+    st.image("assets/logo.png.png")
+with col2:
+    st.title("Weather Dashboard")
 
 city = st.text_input("Enter City Name: ", "Delhi")
 api_key = st.text_input("Enter openWeatherMap API Key: ", type="password")
@@ -242,8 +245,8 @@ if get_weather_btn:
                             value=f"{max_temp_f:.1f}°F"
                            )
                             max_temps_f.append(max_temp_f)
-                                                    
 
+                                                    
                     with col3:
                         if unit == "Celsius (°C)":
                             st.metric(
@@ -258,7 +261,7 @@ if get_weather_btn:
                             label="🤗Feels Like",
                             value=f"{avg_feels_like_f:.1f}°F"
                            )
-                                                    
+
                       
                     with col4:
                         st.metric(
@@ -272,7 +275,6 @@ if get_weather_btn:
                             value=f"{c_weather}"
                         )
 
-                
 
                     forecast_count += 1
 
